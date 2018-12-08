@@ -6,4 +6,4 @@ WORKDIR /app
 
 COPY . /app
 
-CMD ["python", "get_readings.py"]
+CMD ["python", "get_onboard_readings.py"]
