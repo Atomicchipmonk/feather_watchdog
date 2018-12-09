@@ -2,14 +2,9 @@ import time
 import requests
 import os
 
-def read_input(current_name, decimator, unit):
-  current_fd = open('/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/'+current_name)
-  current = float(current_fd.read()) / decimator
-  line='power_data ' + current_name.replace('input', unit) + '=' + str(current)
-  current_fd.close()
-  return line
 
-
+influx_url = os.environ['INFLUXDB_URL']
+unit_id = os.environ['UNIT_ID']
 
 current_input_list=[
 "in_current0_input",
@@ -26,8 +21,17 @@ power_input_list=[
 "in_power1_input",
 "in_power2_input"]
 
-influx_url = os.environ['INFLUXDB_URL']
-unit_id = os.environ['UNIT_ID']
+
+
+def read_input(current_name, decimator, unit):
+  current_fd = open('/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/'+current_name)
+  current = float(current_fd.read()) / decimator
+  line='power_data,host='+unit_id+' ' + current_name.replace('input', unit) + '=' + str(current)
+  current_fd.close()
+  return line
+
+
+
 
 
 while True:
@@ -35,7 +39,7 @@ while True:
     line = read_input(input, 10, 'mAmps')
     print line
     try:
-      resp = requests.post(influx_url+'/write?db='+unit_id, data=line)
+      resp = requests.post(influx_url+'/write?db=TX2i_db', data=line)
       print resp
     except:
      print "Unable to connect"
@@ -43,7 +47,7 @@ while True:
     line = read_input(input, 1000, 'Volts')
     print line
     try:
-      resp = requests.post(influx_url+'/write?db='+unit_id, data=line)
+      resp = requests.post(influx_url+'/write?db=TX2i_db', data=line)
       print resp
     except:
      print "Unable to connect"
@@ -51,7 +55,7 @@ while True:
     line = read_input(input, 10000, 'Watts')
     print line
     try:
-      resp = requests.post(influx_url+'/write?db='+unit_id, data=line)
+      resp = requests.post(influx_url+'/write?db=TX2i_db', data=line)
       print resp
     except:
      print "Unable to connect"
