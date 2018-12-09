@@ -5,8 +5,8 @@ services:
     volumes:
       - ./etc/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     environment:
-      INFLUXDB_URL: http://192.168.1.110:8086
-      UNIT_ID: "TX2i_One"
+      INFLUXDB_URL: $INFLUX_URL
+      UNIT_ID: "$TXID"
     ports:
       - "8092:8092/udp"
       - "8094:8094"
@@ -17,6 +17,6 @@ services:
       context: ../
     image: feather_watchdog
     environment:
-      INFLUXDB_URL: http://192.168.1.110:8086
-      UNIT_ID: "TX2i_One"
+      INFLUXDB_URL: $INFLUX_URL
+      UNIT_ID: "$TXID"
     command: "python get_onboard_readings.py"
